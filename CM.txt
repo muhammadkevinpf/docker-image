@@ -1,0 +1,24 @@
+http://10.170.49.214/cxf/cm-services/retrieve_list_file
+
+{
+    "itemTypes": [
+        "LOOSEMAILS",
+        "POLDOCTEMP",
+        "POLDOC"
+    ],
+    "processCode": "retrieveFiles",
+    "signatureString": "2ef35a61c24418aa365e914514e0d4b0f7fe797f",
+    "transactionTime": "2020-06-03 01:26:36.756",
+    "params": [
+        {
+            "type": "SPAJ_Number",
+            "value": "5900140865"
+        },
+        {
+            "type": "Main_Doc",
+            "value": "SPAJ"
+        }
+    ],
+    "transactionId": "202006030126367560554",
+    "channelId": "pruforce"
+}
