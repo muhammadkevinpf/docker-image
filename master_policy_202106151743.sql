@@ -1,3 +1,0 @@
-INSERT INTO pd_pruladys.master_policy (policy_number,client,description,created_date,created_by,last_updated_date,last_updated_by,is_active,policy_owner,billing_address,product_name,email_owner,dob_owner,product_code,policy_inforce_start) VALUES 
-('57000053','UOB',''Policy Number for UOB'','2020-10-26 15:18:12.962','system',NULL,NULL,true,'Reza Rahman dan Raden Ali Nuradi','UOB Plaza, Gedung Icon Lt. 3\nJl. M.H. Thamrin No. 10\nDKI Jakarta 12920.','Lady''s Account Critical Cover','mailbox1@viddrlxdsmtap01.pru.intranet.asia;mailbox2@viddrlxdsmtap01.pru.intranet.asia','1993-05-05 00:00:00.000','LP1','2021-02-01 00:00:00.000')
-;
