@@ -1,0 +1,247 @@
+library("jenkins-pipeline-library") 
+
+pipeline {
+    agent none
+    stages {
+        stage("Build/Scan") {
+            parallel {
+                stage ("security-fortify-scan") {
+                    agent { node { label 'rits-fortify-prd' } }
+                    environment {
+                        fortify_app_name = 'PTPLA-pf-cekatan-alter'
+                        fortify_app_version = '1.0'
+                        fortify_scan_files = './'
+                    }
+                    steps {
+                        withCredentials([string(credentialsId: '3cdd2bf0-50ff-40f7-a6f7-46f7ce2d3df4', variable: 'fortify_token')]) {
+                            sh '''
+                                echo "=================================================="
+                                echo "========--- security-fortify-scan: Start ---========"
+                                echo "=================================================="
+                                hostname
+                                whoami
+                                cd $WORKSPACE
+                                pwd
+                                ls -ahl
+                                sourceanalyzer -v
+                                sourceanalyzer -b ${fortify_app_name} -clean
+                                sourceanalyzer -b ${fortify_app_name} ${fortify_scan_files} -Dcom.fortify.sca.EnableDOMModeling=true
+                                sourceanalyzer -b ${fortify_app_name} -scan -f ${fortify_app_name}.fpr
+                                fortifyclient -url https://sast.pru.intranet.asia/ssc -authtoken "${fortify_token}" uploadFPR -file ${fortify_app_name}.fpr -project ${fortify_app_name} -version ${fortify_app_version}
+                                echo "=================================================="
+                                echo "========--- security-fortify-scan: End ---========"
+                                echo "=================================================="
+                            '''
+                        }
+                    }
+                }
+            }
+        }  
+                        stage('Build NPM') {
+		    //agent{ node { label 'js' } }
+          agent {
+              kubernetes {
+            yaml """
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                labels:
+                  labelA: whatisthisfor
+              spec:
+                containers:
+                - name: npmwithgitwithpython
+                  image: docker-ptpla-pruforce.pruregistry.intranet.asia:8443/pruforce/custom-base-image/npm-custom:latest
+                  tty: true
+                imagePullSecrets:
+                - name: pruregistry 
+                  """
+                }
+                            }
+                            steps {
+              container('npmwithgitwithpython') {
+                                sh '''
+              npm -v
+                                    set +x
+                                    export version=$(grep '"version": "' package.json | head -n 1 | sed -e 's/"version": "//' -e 's/",//' -e 's/^[ \\t]*//')
+                                    echo "======= Build Application ${version} Start ========"
+                                    npm config set strict-ssl false
+                                    npm install
+                                    npm run build
+                                    ./postbuild.sh
+                                    echo "======= Build Application ${version} Finished ========"
+                                    ls -lah
+                                '''
+                
+                                stash includes: 'build/', name: 'app'
+            }
+          }
+        }
+             stage("Docker Build") {
+              agent{ node { label 'dind' } }
+                steps {            
+                  withCredentials([usernamePassword(credentialsId: '589c605b-f335-495e-a33b-de5af614f773',usernameVariable: 'ARTIUSERNAME', passwordVariable: 'ARTIPASSWORD')]) {
+                                        unstash 'app'
+                                        script{
+                                        if (env.BRANCH_NAME == "master"){
+                                            image_env = "PROD"
+                                        } else if (env.BRANCH_NAME == "uat") {
+                                            image_env = "UAT"
+                                        } else if (env.BRANCH_NAME == "dev") {
+                                            image_env = "DEV" }
+                                    sh '''
+                                        echo "=================================================="
+                                        echo "========--- OSS - Nexus Scan: Start ---========"
+                                        echo "=================================================="
+                                    '''
+                                    String result = nexusscan("PTPLA-pf-cekatan-alter", "$WORKSPACE", "build");
+                                    echo result;
+                                    sh '''
+                                        echo "=================================================="
+                                        echo "========--- OSS - Nexus Scan: End ---========"
+                                        echo "=================================================="
+                                    '''
+                                        sh '''
+                                            echo ${ARTIPASSWORD} | docker login -u ${ARTIUSERNAME} --password-stdin docker-ptpla-pruforce.pruregistry.intranet.asia:8443
+                                          docker build -t docker-ptpla-pruforce.pruregistry.intranet.asia:8443/pruforce/jenkins/pf-cekatan-alter:''' + image_env + '''-${BUILD_NUMBER} .
+                                          docker push docker-ptpla-pruforce.pruregistry.intranet.asia:8443/pruforce/jenkins/pf-cekatan-alter:''' + image_env + '''-${BUILD_NUMBER}
+                                            docker logout docker-ptpla-pruforce.pruregistry.intranet.asia:8443
+                                        '''
+                                      aquasecscan("docker-ptpla-pruforce.pruregistry.intranet.asia:8443/pruforce/jenkins/pf-cekatan-alter:${image_env}-${BUILD_NUMBER}");
+                                    }
+                                }
+                            }
+                        }
+        stage('GKE DEV Deployment') {
+                            when {
+                                beforeAgent true
+            branch 'dev'
+                            }
+                            agent{ node { label 'base' } }
+                            steps {
+                                script {
+                    if (env.BRANCH_NAME == "master"){
+                        image_env = "PROD"
+                    } else if (env.BRANCH_NAME == "uat") {
+                        image_env = "UAT"
+                    } else if (env.BRANCH_NAME == "dev") {
+                        image_env = "DEV"
+                    }
+                                    def vaultAddr = 'https://vault.pru.intranet.asia'
+                    def vaultAppRole = 'pruforce-dev'
+                                    def vaultConfiguration = [
+                                        $class: 'VaultConfiguration',
+                                        vaultUrl: "${vaultAddr}",
+                                        vaultCredentialId: "${vaultAppRole}"
+                                    ]
+                         
+                                    def vaultSecrets = [
+                        [ $class: 'VaultSecret', path: "kv2/pruidlife/nprd/dev/lgtk7w/az1/pf-pruforce-dev/pf-pruforce-dev-deployer", secretValues: [
+                                        // set the token as kubeconfig environment variable
+                                        [ $class: 'VaultSecretValue', envVar: 'kubeconfig', vaultKey: "kubeconfig" ]
+                                        ]]
+                                    ]
+                 
+                                    withVault([configuration: vaultConfiguration, vaultSecrets: vaultSecrets]) {
+                                        sh '''
+                                            set +x
+                            INGRESS_URL=dev-pruforce-dev.lb1-pruidlife-dev-az1-lgtk7w.pru.intranet.asia
+                            cp -r deployment/deployment.yaml .
+                            sed -i "s/{KVPATH}/kv2\\/pruidlife\\/nprd\\/dev\\/lgtk7w\\/az1\\/pf-pruforce-dev/g" deployment.yaml && sed -i "s/{KVROLE}/pf-pruforce-dev/g" deployment.yaml
+                            sed -i "s/{BUILD_NUMBER}/$BUILD_NUMBER/g" deployment.yaml
+                            sed -i "s/{ENVI}/''' + image_env + '''/g" deployment.yaml
+                            sed -i "s/{INGRESS_URL}/$INGRESS_URL/g" deployment.yaml
+                                                                
+                            ls -al
+
+                            echo "------------ preparing options and aliases ----------"
+                            echo "${kubeconfig}" > ${WORKSPACE}/kubeconfig
+                                             export KC_OPTS=${KC_OPTS}" --kubeconfig=${WORKSPACE}/kubeconfig"
+                                             export KC_OPTS=${KC_OPTS}" --insecure-skip-tls-verify=true"
+                                             alias kc="kubectl ${KC_OPTS} $*"
+
+                            echo "------------ applying manifest ----------"
+                            kc apply -f deployment.yaml
+                            sleep 10
+                                             
+                            echo "------------ show deployments ----------"
+                            kc get pod
+                                             kc get svc
+                                             kc get ingress
+                            kc get pvc
+                                        '''
+                                    }
+                                }
+                            }
+        } // end GKE DEV Deployment
+
+        stage('GKE UAT Deployment') {
+            when {
+                beforeAgent true
+                branch 'uat'
+            }
+            agent{ node { label 'base' } }
+            steps {
+                script {
+                    if (env.BRANCH_NAME == "master"){
+                        image_env = "PROD"
+                    } else if (env.BRANCH_NAME == "uat") {
+                        image_env = "UAT"
+                    } else if (env.BRANCH_NAME == "dev") {
+                        image_env = "DEV"
+                        }
+                    def vaultAddr = 'https://vault.pru.intranet.asia'
+                    def vaultAppRole = 'pruforce-uat'
+                    def vaultConfiguration = [
+                        $class: 'VaultConfiguration',
+                        vaultUrl: "${vaultAddr}",
+                        vaultCredentialId: "${vaultAppRole}"
+                    ]
+
+                    def vaultSecrets = [
+                        [ $class: 'VaultSecret', path: "kv2/pruidlife/nprd/uat/to2vcj/az1/pruforce-uat/pruforce-uat-deployer", secretValues: [
+                        // set the token as kubeconfig environment variable
+                        [ $class: 'VaultSecretValue', envVar: 'kubeconfig', vaultKey: "kubeconfig" ]
+                        ]]
+                    ]
+
+                    withVault([configuration: vaultConfiguration, vaultSecrets: vaultSecrets]) {
+
+                        sh '''
+                            set +x
+                            INGRESS_URL=uat-pruforce-uat.lb1-pruidlife-uat-az1-to2vcj.pru.intranet.asia
+                            cp -r deployment/deployment.yaml .
+                            sed -i "s/{KVPATH}/kv2\\/pruidlife\\/nprd\\/uat\\/to2vcj\\/az1\\/pruforce-uat/g" deployment.yaml && sed -i "s/{KVROLE}/pruforce-uat/g" deployment.yaml
+                            sed -i "s/{BUILD_NUMBER}/$BUILD_NUMBER/g" deployment.yaml
+                            sed -i "s/{ENVI}/''' + image_env + '''/g" deployment.yaml
+                            sed -i "s/{INGRESS_URL}/$INGRESS_URL/g" deployment.yaml
+
+                            echo "------------ preparing options and aliases ----------"
+                            echo "${kubeconfig}" > ${WORKSPACE}/kubeconfig
+                            export KC_OPTS=${KC_OPTS}" --kubeconfig=${WORKSPACE}/kubeconfig"
+                            export KC_OPTS=${KC_OPTS}" --insecure-skip-tls-verify=true"
+                            alias kc="kubectl ${KC_OPTS} $*"
+
+                            echo "------------ applying manifest ----------"
+                            kc apply -f deployment.yaml
+                            sleep 10
+
+                            echo "------------ show deployments ----------"
+                            kc get pod
+                            kc get svc
+                            kc get ingress
+                            kc get pvc
+                        '''
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always{
+           emailext(body: '${DEFAULT_CONTENT}', mimeType: 'text/html',
+             replyTo: '$DEFAULT_REPLYTO', subject: '${DEFAULT_SUBJECT}',
+             attachLog: true,
+             to: 'rahadian.arthapati@prudential.co.id,joshua.ellyson@prudential.co.id,garry.alfanzo@prudential.co.id,faisal.reza@prudential.co.id') 
+        }
+    }
+}
