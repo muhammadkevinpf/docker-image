@@ -1,0 +1,1 @@
+SELECT * FROM pruaob.agenttoken token WHERE agentcode = '01005430'
