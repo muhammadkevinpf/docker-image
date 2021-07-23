@@ -1,0 +1,9 @@
+update master_participant set id_number = '1771066503660001' where id_number = '1771062503660003';
+update master_participant set id_number = '5207084106870001' where id_number = '7326014106870005';
+update master_participant set id_number = '1805186410940003' where id_number = '1803026410940003';
+update master_participant set id_number = '3174066903790004' where id_number = '0953066903797024';
+update master_participant set id_number = '3578275911740002' where id_number = '1256285911740001';
+update master_participant set id_number = '3273176004770002' where id_number = '936798255422000';
+update master_participant set id_number = '3276026007840009' where id_number = '327602207840003';
+update master_participant set id_number = '3206265701940002' where id_number = '3216085701940009';
+update master_participant set id_number = '3374036109790002' where id_number = '1150036109790002';

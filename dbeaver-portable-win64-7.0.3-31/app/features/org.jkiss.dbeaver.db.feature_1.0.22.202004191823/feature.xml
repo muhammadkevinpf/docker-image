@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+        id="org.jkiss.dbeaver.db.feature"
+        label="%featureName"
+        version="1.0.22.202004191823"
+        provider-name="%providerName">
+
+    <description>
+        %description
+    </description>
+
+    <copyright>
+        %copyright
+    </copyright>
+
+    <license url="%licenseURL">
+        %license
+    </license>
+
+    <plugin id="org.jkiss.dbeaver.ext.mysql" download-size="304" install-size="768" version="2.1.116.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.mssql" download-size="275" install-size="629" version="1.0.125.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.oracle" download-size="486" install-size="1397" version="2.1.116.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.postgresql" download-size="765" install-size="1878" version="2.1.104.202004191823" unpack="false"/>
+
+    <plugin id="org.jkiss.dbeaver.ext.generic" download-size="837" install-size="1209" version="2.3.117.202004191823" unpack="false"/>
+
+    <plugin id="org.jkiss.dbeaver.ext.clickhouse" download-size="7" install-size="13" version="1.0.36.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.db2.zos" download-size="35" install-size="45" version="1.0.34.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.db2.i" download-size="31" install-size="34" version="1.0.19.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.derby" download-size="5" install-size="9" version="1.1.116.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.firebird" download-size="76" install-size="140" version="1.0.132.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.greenplum" download-size="81" install-size="137" version="1.0.32.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.h2" download-size="6" install-size="12" version="1.0.86.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.h2gis" download-size="20" install-size="23" version="1.0.14.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.hana" download-size="71" install-size="150" version="1.2.9.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.hive" download-size="10" install-size="18" version="1.0.37.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.hsqldb" download-size="12" install-size="25" version="1.0.78.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.informix" download-size="7" install-size="15" version="1.0.122.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.kognitio" download-size="9" install-size="13" version="1.0.15.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.netezza" download-size="4" install-size="6" version="1.0.96.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.opendistro" download-size="14" install-size="22" version="1.0.15.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.phoenix" download-size="7" install-size="12" version="1.0.100.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.snowflake.core" download-size="32" install-size="41" version="1.0.51.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.teradata" download-size="6" install-size="10" version="1.0.99.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.vertica" download-size="47" install-size="114" version="2.0.61.202004191823" unpack="false"/>
+    <plugin id="org.jkiss.dbeaver.ext.ocient" download-size="29" install-size="43" version="1.0.2.202004191823" unpack="false"/>
+
+    <!-- WMI. Windows-only -->
+    <plugin id="org.jkiss.wmi" os="win32" download-size="192" install-size="401" version="2.0.124.202004191823" unpack="false"/>
+
+</feature>

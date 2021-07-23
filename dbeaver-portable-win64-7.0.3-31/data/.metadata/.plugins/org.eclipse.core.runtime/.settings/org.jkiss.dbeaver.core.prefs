@@ -1,0 +1,12 @@
+dialog.default.folder = C:\\Tools\\dbeaver-portable-win64-7.0.3-31\\data
+eclipse.preferences.version = 1
+logs.debug.location = C:\\Tools\\dbeaver-portable-win64-7.0.3-31\\data\\.metadata\\logs\\dbeaver-debug.log
+qm.logDirectory = C:\\Tools\\dbeaver-portable-win64-7.0.3-31\\data\\.metadata\\logs
+resultset.presentation.active = spreadsheet
+sample.database.canceled = true
+ui.auto.update.check = false
+ui.drivers.home = C:\\Tools\\dbeaver-portable-win64-7.0.3-31\\data\\.metadata\\drivers
+ui.proxy.host = http://idnproxy.pru.intranet.asia
+ui.proxy.password = dlga/pFd+4krsRtP1NNIog==
+ui.proxy.port = 8080
+ui.proxy.user = 374745

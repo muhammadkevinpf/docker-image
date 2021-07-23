@@ -1,0 +1,119 @@
+{
+	"folders": {},
+	"connections": {
+		"microsoft-17549b9b23f-47b9347fb6a53096": {
+			"provider": "sqlserver",
+			"driver": "microsoft",
+			"name": "SQL Server - 10.170.49.196:1433",
+			"save-password": true,
+			"show-system-objects": true,
+			"read-only": false,
+			"configuration": {
+				"host": "10.170.49.196",
+				"port": "1433",
+				"database": "master",
+				"url": "jdbc:sqlserver://;serverName=10.170.49.196;databaseName=master",
+				"type": "dev",
+				"properties": {
+					"trustServerCertificate": "true"
+				},
+				"provider-properties": {
+					"@dbeaver-authentication@": "SQL_SERVER_PASSWORD",
+					"@dbeaver-show-all-schemas@": "false"
+				}
+			},
+			"custom-properties": {
+				"database.meta.separate.connection": "false"
+			}
+		},
+		"postgres-jdbc-17988b57fa2-2b549170924e46c0": {
+			"provider": "postgresql",
+			"driver": "postgres-jdbc",
+			"name": "PostgreSQL - 10.170.49.168:5006",
+			"save-password": true,
+			"navigator-show-only-entities": true,
+			"navigator-hide-folders": true,
+			"navigator-hide-virtual": true,
+			"read-only": false,
+			"configuration": {
+				"host": "10.170.49.168",
+				"port": "5006",
+				"database": "postgres",
+				"url": "jdbc:postgresql://10.170.49.168:5006/postgres",
+				"home": "PostgreSQL Binaries",
+				"type": "dev",
+				"properties": {
+					"connectTimeout": "20",
+					"loginTimeout": "20"
+				},
+				"provider-properties": {
+					"@dbeaver-show-non-default-db@": "true",
+					"@dbeaver-show-template-db@": "false",
+					"postgresql.dd.plain.string": "false",
+					"postgresql.dd.tag.string": "false"
+				},
+				"auth-model": "native"
+			}
+		},
+		"postgres-jdbc-179e4b090b0-4b85558ede489bf4": {
+			"provider": "postgresql",
+			"driver": "postgres-jdbc",
+			"name": "PostgreSQL - 10.170.49.168",
+			"save-password": true,
+			"show-system-objects": true,
+			"read-only": false,
+			"configuration": {
+				"host": "10.170.49.168",
+				"port": "5432",
+				"database": "postgres",
+				"url": "jdbc:postgresql://10.170.49.168:5432/postgres",
+				"home": "PostgreSQL Binaries",
+				"type": "dev",
+				"provider-properties": {
+					"@dbeaver-show-non-default-db@": "true",
+					"@dbeaver-show-template-db@": "false",
+					"postgresql.dd.plain.string": "false",
+					"postgresql.dd.tag.string": "false"
+				},
+				"auth-model": "native"
+			},
+			"custom-properties": {
+				"database.meta.separate.connection": "false"
+			}
+		},
+		"postgres-jdbc-17a59f11d5a-78e1a1032d0dddec": {
+			"provider": "postgresql",
+			"driver": "postgres-jdbc",
+			"name": "PostgreSQL - esub - prd",
+			"save-password": true,
+			"show-system-objects": true,
+			"read-only": false,
+			"configuration": {
+				"host": "10.170.53.102",
+				"port": "5006",
+				"database": "postgres",
+				"url": "jdbc:postgresql://10.170.53.102:5006/postgres",
+				"home": "PostgreSQL Binaries",
+				"type": "dev",
+				"provider-properties": {
+					"@dbeaver-show-non-default-db@": "false",
+					"@dbeaver-show-template-db@": "false",
+					"postgresql.dd.plain.string": "false",
+					"postgresql.dd.tag.string": "false"
+				},
+				"auth-model": "native",
+				"handlers": {}
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false
+		}
+	}
+}
